@@ -19,7 +19,7 @@ function App() {
   //Dodawanie wpisów w konsoli
   const addLog = (msg: string) => setLogs(prev => [...prev, `> ${msg}`].slice(-5));
 
-  //Sprawdzenie czy chociaż jeden element został odszyfrowany (czy hasło jest poprawne)
+  //Sprawdzenie czy elementy są odszyfrowane
   const isVaultUnlocked = vaultItems.some(item => item.decryptedTitle);
 
   //Komunikacja z GO
@@ -28,7 +28,12 @@ function App() {
       const response = await fetch('http://localhost:8080/api/all');
       if (response.ok) {
         const data = await response.json();
-        setVaultItems(data.items || []);
+
+        const cleanItems = (data.items || []).map((i: any) => ({
+             ...i, 
+             decryptedTitle: undefined 
+        }));
+        setVaultItems(cleanItems);
         addLog(`SYNC: Pobrano ${data.items ? data.items.length : 0} wpisów.`);
       }
     } catch (e) {
@@ -103,28 +108,49 @@ function App() {
   };
 
   useEffect(() => {
-    const decryptList = async () => {
-      if (!masterPassword || vaultItems.length === 0) return;
+    const handleVisibility = async () => {
+      if (!masterPassword) {
+         setVaultItems(prev => {
+             if (prev.some(item => item.decryptedTitle)) {
+                 return prev.map(item => ({ ...item, decryptedTitle: undefined }));
+             }
+             return prev;
+         });
+         setDecryptedView('');
+         return;
+      }
 
       try {
         const key = await getKey(masterPassword);
         
         const updatedItems = await Promise.all(vaultItems.map(async (item) => {
-          if (item.decryptedTitle) return item;
           const title = await tryDecryptTitle(item.content, key);
-          return title ? { ...item, decryptedTitle: title } : item;
+          
+          return { 
+              ...item, 
+              decryptedTitle: title || undefined 
+          };
         }));
 
         setVaultItems(prev => {
-           const needsUpdate = updatedItems.some((item, idx) => item.decryptedTitle !== prev[idx]?.decryptedTitle);
-           return needsUpdate ? updatedItems : prev;
+           const hasChanges = JSON.stringify(prev) !== JSON.stringify(updatedItems);
+           return hasChanges ? updatedItems : prev;
         });
-      } catch (e) { }
+
+        const anySuccess = updatedItems.some(i => i.decryptedTitle);
+        if (!anySuccess) {
+             setDecryptedView('');
+        }
+
+      } catch (e) { 
+        //Gdyby wyrzuciło kryptografię
+      }
     };
 
-    const timeoutId = setTimeout(decryptList, 500);
+    const timeoutId = setTimeout(handleVisibility, 300);
     return () => clearTimeout(timeoutId);
-  }, [masterPassword, vaultItems]);
+    
+  }, [masterPassword, vaultItems.length]); 
 
   //Szyfrowanie (AES-GCM)
   const handleEncryptAndSave = async () => {
@@ -258,7 +284,7 @@ function App() {
           {/* Przyciski */}
           <div className="grid grid-cols-2 gap-4">
             <button onClick={handleEncryptAndSave} className="bg-gray-800 border border-neon-blue text-neon-blue hover:bg-neon-blue hover:text-white p-3 font-bold transition-all uppercase text-xs">
-              SZYFRUJ
+              SZYFRUJ I DODAJ
             </button>
             <button onClick={refreshVault} className="bg-gray-800 border border-gray-600 text-yellow-500 hover:border-yellow-500 hover:text-white p-3 font-bold transition-all uppercase text-xs">
               ODŚWIEŻ LISTĘ
@@ -273,7 +299,7 @@ function App() {
              </div>
           )}
 
-          {/* Baza danych */}
+          {/* Baza danych (Lista) */}
           <div className="border border-gray-700 bg-black/50 p-2">
             <h3 className="text-xs text-gray-500 mb-2 uppercase border-b border-gray-800 pb-1 flex justify-between">
                 <span>Zawartość ({vaultItems.length})</span>
