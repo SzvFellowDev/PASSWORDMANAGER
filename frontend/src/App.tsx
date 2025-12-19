@@ -4,6 +4,7 @@ interface VaultItem {
   id: string;
   content: string;
   created_at: string;
+  decryptedTitle?: string; 
 }
 
 function App() {
@@ -54,13 +55,14 @@ function App() {
   };
 
   //Zamiana hasła na klucz z użyciem PBKDF2
-  const getKey = async () => {
+  const getKey = async (passwordOverride?: string) => {
+    const passwordToUse = passwordOverride || masterPassword;
     const enc = new TextEncoder();
     
     //Import hasła
     const keyMaterial = await window.crypto.subtle.importKey(
       "raw", 
-      enc.encode(masterPassword), 
+      enc.encode(passwordToUse), 
       { name: "PBKDF2" }, 
       false, 
       ["deriveKey"]
@@ -78,6 +80,49 @@ function App() {
       ["encrypt", "decrypt"]
     );
   };
+
+  //Pokazanie nazw serwisów na liście
+  const tryDecryptTitle = async (blob: string, key: CryptoKey): Promise<string | null> => {
+    try {
+      const [ivHex, encryptedHex] = blob.split(':');
+      const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+      const encryptedBytes = new Uint8Array(encryptedHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+
+      const decryptedContent = await window.crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv }, key, encryptedBytes
+      );
+
+      const decryptedString = new TextDecoder().decode(decryptedContent);
+      const data = JSON.parse(decryptedString);
+      return data.title;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const decryptList = async () => {
+      if (!masterPassword || vaultItems.length === 0) return;
+
+      try {
+        const key = await getKey(masterPassword);
+        
+        const updatedItems = await Promise.all(vaultItems.map(async (item) => {
+          if (item.decryptedTitle) return item;
+          const title = await tryDecryptTitle(item.content, key);
+          return title ? { ...item, decryptedTitle: title } : item;
+        }));
+
+        setVaultItems(prev => {
+           const needsUpdate = updatedItems.some((item, idx) => item.decryptedTitle !== prev[idx]?.decryptedTitle);
+           return needsUpdate ? updatedItems : prev;
+        });
+      } catch (e) { }
+    };
+
+    const timeoutId = setTimeout(decryptList, 500);
+    return () => clearTimeout(timeoutId);
+  }, [masterPassword, vaultItems]);
 
   //Szyfrowanie (AES-GCM)
   const handleEncryptAndSave = async () => {
@@ -228,17 +273,30 @@ function App() {
 
           {/* Baza danych (Lista) */}
           <div className="border border-gray-700 bg-black/50 p-2">
-            <h3 className="text-xs text-gray-500 mb-2 uppercase border-b border-gray-800 pb-1">Zawartość ({vaultItems.length})</h3>
+            <h3 className="text-xs text-gray-500 mb-2 uppercase border-b border-gray-800 pb-1 flex justify-between">
+                <span>Zawartość ({vaultItems.length})</span>
+                <span className={masterPassword ? "text-green-500" : "text-gray-600"}>
+                    {masterPassword ? "ODBLOKOWANE" : "ZABLOKOWANE"}
+                </span>
+            </h3>
             <div className="max-h-40 overflow-y-auto space-y-1 custom-scrollbar">
                 {vaultItems.length === 0 && <p className="text-[10px] text-gray-700 text-center">Pusto...</p>}
+                
                 {vaultItems.map((item) => (
                     <div key={item.id} className="flex justify-between items-center bg-gray-900 p-2 hover:bg-gray-800 transition-colors">
-                        <span className="text-[10px] text-gray-400 font-mono">ID: {item.id}</span>
+                        <div className="flex flex-col overflow-hidden">
+                             {item.decryptedTitle ? (
+                                <span className="text-sm font-bold text-white tracking-wide truncate">{item.decryptedTitle}</span>
+                            ) : (
+                                <span className="text-[10px] text-gray-400 font-mono">ID: {item.id}</span>
+                            )}
+                        </div>
+                        
                         <button 
                             onClick={() => handleDecryptItem(item.content)}
-                            className="text-[10px] text-neon-blue border border-neon-blue px-2 hover:bg-neon-blue hover:text-white transition-all uppercase"
+                            className={`text-[10px] px-2 border transition-all uppercase ${item.decryptedTitle ? 'text-green-400 border-green-500 hover:bg-green-500 hover:text-black' : 'text-neon-blue border-neon-blue hover:bg-neon-blue hover:text-white'}`}
                         >
-                            Odszyfruj
+                            {item.decryptedTitle ? "Pokaż" : "Odszyfruj"}
                         </button>
                     </div>
                 ))}
