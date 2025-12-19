@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -16,7 +18,30 @@ type VaultItem struct {
 
 var database []VaultItem
 
+const dbFile = "vault.json"
+
+func saveData() {
+	data, err := json.MarshalIndent(database, "", "  ")
+	if err != nil {
+		println("ERROR: Nie można zapisać bazy danych!")
+		return
+	}
+	os.WriteFile(dbFile, data, 0644)
+}
+
+func loadData() {
+	data, err := os.ReadFile(dbFile)
+	if err != nil {
+		println("SYSTEM: Brak pliku bazy danych. Tworzenie nowej bazy danych...")
+		return
+	}
+	json.Unmarshal(data, &database)
+	println("SYSTEM: Załadowano wpisy z pliku:", len(database))
+}
+
 func main() {
+	loadData()
+
 	r := gin.Default()
 
 	config := cors.DefaultConfig()
@@ -36,9 +61,10 @@ func main() {
 		newItem.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 
 		database = append(database, newItem)
+		saveData()
 
-		println("SERWER: Dodano nowy wpis. Liczba wpisów:", len(database))
-		c.JSON(http.StatusOK, gin.H{"STATUS": "Dodano do menedżera haseł", "id": newItem.ID})
+		println("SERWER: Dodano wpis. Baza zapisana.")
+		c.JSON(http.StatusOK, gin.H{"STATUS": "Zapisano", "id": newItem.ID})
 	})
 
 	r.GET("/api/all", func(c *gin.Context) {
