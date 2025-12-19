@@ -1,19 +1,22 @@
 package main
 
-import (
+import 
+(
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-type SecretData struct {
+type SecretData struct 
+{
 	Content string `json:"content"`
 }
 
 var fakeDatabase string = ""
 
-func main() {
+func main() 
+{
 	r := gin.Default()
 
 	config := cors.DefaultConfig()
@@ -23,20 +26,26 @@ func main() {
 
 	r.POST("/api/save", func(c *gin.Context) {
 		var incomingData SecretData
-		if err := c.BindJSON(&incomingData); err != nil {
+
+		if err := c.BindJSON(&incomingData); err != nil 
+		{
 			c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Błędne dane"})
 			return
 		}
+
 		fakeDatabase = incomingData.Content
-		println(">>> SERWER: Otrzymano i zapisano dane!")
-		c.JSON(http.StatusOK, gin.H{"status": "Zapisano w menedżerze haseł!"})
+
+		println("SERWER: Otrzymano i zapisano dane!")
+		c.JSON(http.StatusOK, gin.H{"STATUS": "Zapisano w bunkrze"})
 	})
 
 	r.GET("/api/load", func(c *gin.Context) {
-		if fakeDatabase == "" {
+		if fakeDatabase == "" 
+		{
 			c.JSON(http.StatusNotFound, gin.H{"ERROR": "Baza jest pusta"})
 			return
 		}
+
 		c.JSON(http.StatusOK, gin.H{"content": fakeDatabase})
 	})
 
