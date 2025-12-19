@@ -1,4 +1,4 @@
-PROJEKT: AHNS Password Manager (Zero-Knowledge)
+PROJEKT: AHNS Password Manager w systemie Zero-Knowledge
 AUTOR: Krystian Szaliński | Cezary Woźniak
 
 OPIS:
