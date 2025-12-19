@@ -53,7 +53,7 @@ function App() {
     }
   };
 
-  //Zamiana hasła na klucz z użyciem PBKDF2
+  // Zamiana hasła na klucz z użyciem PBKDF2
   const getKey = async () => {
     const enc = new TextEncoder();
     
@@ -66,10 +66,10 @@ function App() {
       ["deriveKey"]
     );
     
-    //Użycie soli kryptograficznej
+    // Użycie soli kryptograficznej
     const salt = enc.encode("sol-bunkra-demo"); 
 
-    //Wygenerowanie właściwego klucza AES
+    // Wygenerowanie właściwego klucza AES
     return window.crypto.subtle.deriveKey(
       { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
       keyMaterial,
@@ -97,7 +97,7 @@ function App() {
       
       const encodedData = new TextEncoder().encode(dataPackage);
 
-      //Właściwe szyfrowanie
+      // Właściwe szyfrowanie
       const encryptedContent = await window.crypto.subtle.encrypt(
         { name: "AES-GCM", iv: iv },
         key,
@@ -151,116 +151,107 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-bunker-dark text-bunker-text font-mono p-8 flex flex-col items-center">
-      
-      <div className="w-full max-w-4xl flex justify-between items-center border-b-2 border-gray-700 pb-4 mb-8">
-        {/* Główny panel */}
-        <div>
-          <h1 className="text-2xl font-bold text-neon-blue tracking-wider uppercase">AHNS Password Manager</h1>
-        </div>
-        <div className="flex gap-2">
-            <div className={`w-3 h-3 rounded-full transition-all ${masterPassword ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`}></div>
-            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+    <div className="min-h-screen bg-bunker-dark text-bunker-text font-mono flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl border-2 border-gray-700 bg-bunker-panel shadow-2xl relative flex flex-col max-h-[90vh]">
         
-        <div className="border-2 border-gray-700 bg-bunker-panel p-6 shadow-2xl h-fit">
-          <h2 className="text-xl border-b border-gray-700 pb-2 mb-4 text-gray-300 uppercase">Dodaj wpis</h2>
+        {/* Główny panel */}
+        <div className="flex justify-between items-center bg-gray-800 p-2 border-b-2 border-gray-700 shrink-0">
+          {/* Twoja nazwa systemu */}
+          <span className="text-xs text-gray-400">AHNS Password Manager</span>
           
+          <div className="flex gap-2">
+            <div className={`w-3 h-3 rounded-full transition-all ${masterPassword ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`}></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-50"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+          </div>
+        </div>
+
+        <div className="p-8 space-y-6 overflow-y-auto">
+          <h1 className="text-3xl font-bold text-neon-blue tracking-wider text-center uppercase border-b border-gray-700 pb-4">
+            Menedżer Haseł
+          </h1>
+
           {/* Wejścia */}
           <div className="space-y-4">
             <div>
-              <label className="text-xs uppercase text-neon-blue font-bold tracking-widest">Klucz Główny</label>
+              <label className="text-xs uppercase text-gray-500 tracking-widest">Klucz dostępu: </label>
               <input 
                 type="password" 
                 value={masterPassword}
                 onChange={(e) => setMasterPassword(e.target.value)}
-                className="w-full bg-black border border-neon-blue p-3 text-white focus:outline-none focus:shadow-[0_0_10px_rgba(41,98,255,0.3)] transition-all"
-                placeholder="Wpisz klucz..."
-              />
-            </div>
-
-            <hr className="border-gray-700"/>
-
-            <div>
-              <label className="text-xs uppercase text-gray-500 tracking-widest">Serwis Internetowy</label>
-              <input 
-                type="text" 
-                value={inputTitle}
-                onChange={(e) => setInputTitle(e.target.value)}
-                className="w-full bg-gray-900 border border-gray-600 p-2 text-white focus:border-neon-blue focus:outline-none"
-                placeholder="np. Facebook"
+                className="w-full bg-gray-900 border border-gray-600 p-3 text-neon-blue focus:border-neon-blue focus:outline-none transition-colors"
+                placeholder="Wpisz klucz szyfrujący..."
               />
             </div>
             
-            <div>
-              <label className="text-xs uppercase text-gray-500 tracking-widest">Tajne dane</label>
-              <textarea 
-                rows={2}
-                value={inputSecret}
-                onChange={(e) => setInputSecret(e.target.value)}
-                className="w-full bg-gray-900 border border-gray-600 p-2 text-white focus:border-neon-blue focus:outline-none"
-                placeholder="Login / Hasło..."
-              />
+            <div className="grid grid-cols-2 gap-4">
+               <div>
+                <label className="text-xs uppercase text-gray-500 tracking-widest">...</label>
+                <input 
+                    type="text" 
+                    value={inputTitle}
+                    onChange={(e) => setInputTitle(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:border-neon-blue focus:outline-none"
+                    placeholder="np. Facebook"
+                />
+               </div>
+               <div>
+                <label className="text-xs uppercase text-gray-500 tracking-widest">...</label>
+                <input 
+                    type="text" 
+                    value={inputSecret}
+                    onChange={(e) => setInputSecret(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:border-neon-blue focus:outline-none"
+                    placeholder="Dane do ukrycia..."
+                />
+               </div>
             </div>
-
-            {/* Przyciski*/}
-            <button onClick={handleEncryptAndSave} className="w-full bg-neon-blue text-white font-bold p-3 hover:bg-blue-600 transition-all uppercase text-sm shadow-lg">
-              SZYFRUJ I DODAJ
-            </button>
           </div>
 
-           {/* Logi */}
-           <div className="mt-6 p-2 bg-black border border-gray-800 font-mono text-[10px] text-gray-500 h-24 overflow-hidden flex flex-col justify-end">
+          {/* Przyciski */}
+          <div className="grid grid-cols-2 gap-4">
+            <button onClick={handleEncryptAndSave} className="bg-gray-800 border border-neon-blue text-neon-blue hover:bg-neon-blue hover:text-white p-3 font-bold transition-all uppercase text-xs">
+              SZYFRUJ I DODAJ
+            </button>
+            <button onClick={refreshVault} className="bg-gray-800 border border-gray-600 text-yellow-500 hover:border-yellow-500 hover:text-white p-3 font-bold transition-all uppercase text-xs">
+              ODŚWIEŻ LISTĘ
+            </button>
+          </div>
+          
+          {/* Wynik odszyfrowania */}
+          {decryptedView && (
+             <div className={`p-4 border ${decryptedView.includes('!') ? 'border-red-500 bg-red-900/20' : 'border-green-500/30 bg-green-900/20'}`}>
+                <label className="text-[10px] uppercase opacity-70">Twoje dane: </label>
+                <p className={`whitespace-pre-wrap ${decryptedView.includes('!') ? 'text-red-500 font-bold' : 'text-green-400 font-bold'}`}>{decryptedView}</p>
+             </div>
+          )}
+
+          {/* Baza danych (Lista) */}
+          <div className="border border-gray-700 bg-black/50 p-2">
+            <h3 className="text-xs text-gray-500 mb-2 uppercase border-b border-gray-800 pb-1">Zawartość ({vaultItems.length})</h3>
+            <div className="max-h-40 overflow-y-auto space-y-1 custom-scrollbar">
+                {vaultItems.length === 0 && <p className="text-[10px] text-gray-700 text-center">Pusto...</p>}
+                {vaultItems.map((item) => (
+                    <div key={item.id} className="flex justify-between items-center bg-gray-900 p-2 hover:bg-gray-800 transition-colors">
+                        <span className="text-[10px] text-gray-400 font-mono">ID: {item.id}</span>
+                        <button 
+                            onClick={() => handleDecryptItem(item.content)}
+                            className="text-[10px] text-neon-blue border border-neon-blue px-2 hover:bg-neon-blue hover:text-white transition-all uppercase"
+                        >
+                            Odszyfruj
+                        </button>
+                    </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Logi */}
+          <div className="mt-4 p-4 bg-black border border-gray-800 font-mono text-xs text-gray-500 h-24 overflow-hidden flex flex-col justify-end shrink-0">
             {logs.map((log, i) => (
-              <p key={i} className={log.includes("ERROR") || log.includes("BŁĄD") || log.includes("Odmowa") ? "text-red-500" : log.includes("SERWER") || log.includes("Sukces") || log.includes("Przyznanie") ? "text-green-500" : ""}>
+              <p key={i} className={log.includes("ERROR") || log.includes("Odmowa") || log.includes("BŁĄD") ? "text-red-500" : log.includes("Sukces") || log.includes("Przyznanie") || log.includes("SERWER") ? "text-green-500" : ""}>
                 {log}
               </p>
             ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-6">
-          
-          {/* Wynik odszyfrowania */}
-          <div className={`border-2 p-6 transition-all min-h-[150px] flex flex-col justify-center ${decryptedView.includes('!') ? 'border-red-500 bg-red-900/10' : decryptedView ? 'border-green-500 bg-green-900/10' : 'border-gray-700 bg-bunker-panel'}`}>
-             {!decryptedView && <p className="text-gray-600 text-center text-sm"> Wybierz wpis z listy, aby odszyfrować </p>}
-             {decryptedView && (
-               <div className="whitespace-pre-wrap font-bold text-lg text-center animate-pulse">
-                 {decryptedView}
-               </div>
-             )}
-          </div>
-
-          {/* Baza danych */}
-          <div className="border-2 border-gray-700 bg-bunker-panel p-4 shadow-2xl flex-1 overflow-auto max-h-[400px]">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-sm uppercase text-gray-400">Lista Wpisów ({vaultItems.length})</h2>
-              <button onClick={refreshVault} className="text-[10px] text-neon-blue hover:text-white border border-neon-blue px-2 py-1">ODŚWIEŻ</button>
-            </div>
-
-            <div className="space-y-2">
-              {vaultItems.length === 0 && <p className="text-gray-600 text-center py-4">Baza jest pusta.</p>}
-              
-              {vaultItems.map((item) => (
-                <div key={item.id} className="bg-gray-900 border border-gray-700 p-3 flex justify-between items-center hover:border-gray-500 transition-colors group">
-                  <div className="overflow-hidden">
-                    <p className="text-xs text-neon-blue font-bold">ID: {item.id}</p>
-                    <p className="text-[10px] text-gray-500 truncate w-32">{item.created_at}</p>
-                  </div>
-                  <div className="text-right">
-                     <button 
-                        onClick={() => handleDecryptItem(item.content)}
-                        className="bg-gray-800 text-gray-300 text-xs px-3 py-1 border border-gray-600 hover:bg-green-600 hover:text-white hover:border-green-500 transition-all uppercase"
-                     >
-                       ODSZYFRUJ
-                     </button>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
         </div>
