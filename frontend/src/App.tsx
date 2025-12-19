@@ -284,7 +284,7 @@ function App() {
           {/* Przyciski */}
           <div className="grid grid-cols-2 gap-4">
             <button onClick={handleEncryptAndSave} className="bg-gray-800 border border-neon-blue text-neon-blue hover:bg-neon-blue hover:text-white p-3 font-bold transition-all uppercase text-xs">
-              SZYFRUJ I DODAJ
+              SZYFRUJ
             </button>
             <button onClick={refreshVault} className="bg-gray-800 border border-gray-600 text-yellow-500 hover:border-yellow-500 hover:text-white p-3 font-bold transition-all uppercase text-xs">
               ODŚWIEŻ LISTĘ
