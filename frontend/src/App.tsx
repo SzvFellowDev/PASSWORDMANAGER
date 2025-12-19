@@ -1,21 +1,60 @@
 import { useState } from 'react';
 
 function App() {
- //Pamięć aplikacji
+  // Pamięć aplikacji
   const [masterPassword, setMasterPassword] = useState('');
   const [secretNote, setSecretNote] = useState('');
   const [encryptedData, setEncryptedData] = useState<string | null>(null);
   const [decryptedView, setDecryptedView] = useState<string>('');
   const [logs, setLogs] = useState<string[]>(['> Inicjalizacja...', '> Czekam na wprowadzenie danych do zaszyfrowania...']);
 
-  // Funkcja do dodawania wpisów w konsoli
+  //Dodawanie wpisów w konsoli
   const addLog = (msg: string) => setLogs(prev => [...prev, `> ${msg}`].slice(-5));
 
-  //Zamiana hasła na klucz z użyciem PBKDF2
+  //Komunikacja z GO
+
+  const saveToServer = async (encryptedBlob: string) => {
+    try {
+      addLog("SIEĆ: Wysyłanie do serwera...");
+      const response = await fetch('http://localhost:8080/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: encryptedBlob })
+      });
+
+      if (response.ok) {
+        addLog("SERWER: Zapisano dane w bazie!");
+      } else {
+        addLog("SERWER ERROR: Błąd zapisu.");
+      }
+    } catch (e) {
+      addLog("BŁĄD SIECI: Czy serwer Go działa?");
+    }
+  };
+
+  const loadFromServer = async () => {
+    try {
+      addLog("SIEĆ: Pobieranie danych...");
+      const response = await fetch('http://localhost:8080/api/load');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setEncryptedData(data.content);
+        addLog("SERWER: Dane pobrane.");
+        addLog(`BLOB: ${data.content.substring(0, 15)}...`);
+      } else {
+        addLog("SERWER: Baza jest pusta.");
+      }
+    } catch (e) {
+      addLog("BŁĄD SIECI: Brak połączenia.");
+    }
+  };
+
+  // Zamiana hasła na klucz z użyciem PBKDF2
   const getKey = async () => {
     const enc = new TextEncoder();
     
-    //Import hasła
+    // Import hasła
     const keyMaterial = await window.crypto.subtle.importKey(
       "raw", 
       enc.encode(masterPassword), 
@@ -24,10 +63,10 @@ function App() {
       ["deriveKey"]
     );
     
-    //Użycie soli kryptograficznej
+    // Użycie soli kryptograficznej
     const salt = enc.encode("sol-bunkra-demo"); 
 
-    //Wygenerowanie właściwego klucza AES
+    // Wygenerowanie właściwego klucza AES
     return window.crypto.subtle.deriveKey(
       { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
       keyMaterial,
@@ -37,7 +76,7 @@ function App() {
     );
   };
 
-  //Szyfrowanie (AES-GCM)
+  // Szyfrowanie (AES-GCM)
   const handleEncrypt = async () => {
     if (!masterPassword || !secretNote) {
       addLog("ERROR: Błędne hasło!");
@@ -64,7 +103,10 @@ function App() {
       setEncryptedData(fullBlob);
       setDecryptedView('');
       addLog("Sukces! Dane zaszyfrowane.");
-      addLog(`Klucz szyfrujący wygenerowany.`);
+      
+      //Automatyczna wysyłka do serwera po zaszyfrowaniu
+      await saveToServer(fullBlob);
+
     } catch (e) {
       addLog("ERROR! Dane niezaszyfrowane.");
       console.error(e);
@@ -102,7 +144,7 @@ function App() {
         
         {/* Główny panel */}
         <div className="flex justify-between items-center bg-gray-800 p-2 border-b-2 border-gray-700">
-          {/* TU ZMIEŃ NAZWĘ SWOJEGO SYSTEMU */}
+          {/* Twoja nazwa systemu */}
           <span className="text-xs text-gray-400">AHNS Password Manager</span>
           
           <div className="flex gap-2">
@@ -142,12 +184,15 @@ function App() {
             </div>
           </div>
 
-          {/* Przyciski */}
-          <div className="grid grid-cols-2 gap-4">
-            <button onClick={handleEncrypt} className="bg-gray-800 border border-neon-blue text-neon-blue hover:bg-neon-blue hover:text-white p-3 font-bold transition-all uppercase">
+          {/* Przyciski - Zmieniono na 3 kolumny */}
+          <div className="grid grid-cols-3 gap-4">
+            <button onClick={handleEncrypt} className="bg-gray-800 border border-neon-blue text-neon-blue hover:bg-neon-blue hover:text-white p-3 font-bold transition-all uppercase text-xs">
               ZASZYFRUJ
             </button>
-            <button onClick={handleDecrypt} disabled={!encryptedData} className="bg-gray-800 border border-gray-600 text-gray-400 hover:border-green-500 hover:text-green-500 hover:bg-gray-900 disabled:opacity-30 p-3 font-bold transition-all uppercase">
+            <button onClick={loadFromServer} className="bg-gray-800 border border-gray-600 text-yellow-500 hover:border-yellow-500 hover:text-white p-3 font-bold transition-all uppercase text-xs">
+              POBIERZ
+            </button>
+            <button onClick={handleDecrypt} disabled={!encryptedData} className="bg-gray-800 border border-gray-600 text-green-500 hover:border-green-500 hover:bg-green-900 disabled:opacity-30 p-3 font-bold transition-all uppercase text-xs">
               ODSZYFRUJ
             </button>
           </div>
@@ -173,7 +218,7 @@ function App() {
           {/* Logi */}
           <div className="mt-4 p-4 bg-black border border-gray-800 font-mono text-xs text-gray-500 h-32 overflow-hidden flex flex-col justify-end">
             {logs.map((log, i) => (
-              <p key={i} className={log.includes("ERROR") || log.includes("Odmowa") ? "text-red-500" : log.includes("Sukces") || log.includes("Przyznane") ? "text-green-500" : ""}>
+              <p key={i} className={log.includes("ERROR") || log.includes("Odmowa") || log.includes("BŁĄD") ? "text-red-500" : log.includes("Sukces") || log.includes("Przyznanie") || log.includes("SERWER") ? "text-green-500" : ""}>
                 {log}
               </p>
             ))}
