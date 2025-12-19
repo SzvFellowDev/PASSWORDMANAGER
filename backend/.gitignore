@@ -1,0 +1,14 @@
+#biblioteki Node.js
+node_modules/
+dist/
+
+#pliki Go
+*.exe
+*.exe~
+
+#pliki środowiskowe z hasłami
+.env
+
+#pliki systemowe
+.DS_Store
+Thumbs.db

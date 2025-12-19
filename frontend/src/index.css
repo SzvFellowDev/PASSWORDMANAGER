@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tło całego bunkra */
+body {
+  background-color: #0f1115; 
+  color: #d1d4dc;
+}
