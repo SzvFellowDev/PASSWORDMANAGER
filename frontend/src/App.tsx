@@ -19,6 +19,9 @@ function App() {
   //Dodawanie wpisów w konsoli
   const addLog = (msg: string) => setLogs(prev => [...prev, `> ${msg}`].slice(-5));
 
+  //Sprawdzenie czy chociaż jeden element został odszyfrowany (czy hasło jest poprawne)
+  const isVaultUnlocked = vaultItems.some(item => item.decryptedTitle);
+
   //Komunikacja z GO
   const refreshVault = async () => {
     try {
@@ -81,7 +84,6 @@ function App() {
     );
   };
 
-  //Pokazanie nazw serwisów na liście
   const tryDecryptTitle = async (blob: string, key: CryptoKey): Promise<string | null> => {
     try {
       const [ivHex, encryptedHex] = blob.split(':');
@@ -205,7 +207,7 @@ function App() {
           <span className="text-xs text-gray-400">AHNS Password Manager</span>
           
           <div className="flex gap-2">
-            <div className={`w-3 h-3 rounded-full transition-all ${masterPassword ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`}></div>
+            <div className={`w-3 h-3 rounded-full transition-all ${isVaultUnlocked ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`}></div>
             <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-50"></div>
             <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
           </div>
@@ -256,7 +258,7 @@ function App() {
           {/* Przyciski */}
           <div className="grid grid-cols-2 gap-4">
             <button onClick={handleEncryptAndSave} className="bg-gray-800 border border-neon-blue text-neon-blue hover:bg-neon-blue hover:text-white p-3 font-bold transition-all uppercase text-xs">
-              SZYFRUJ I DODAJ
+              SZYFRUJ
             </button>
             <button onClick={refreshVault} className="bg-gray-800 border border-gray-600 text-yellow-500 hover:border-yellow-500 hover:text-white p-3 font-bold transition-all uppercase text-xs">
               ODŚWIEŻ LISTĘ
@@ -271,12 +273,12 @@ function App() {
              </div>
           )}
 
-          {/* Baza danych (Lista) */}
+          {/* Baza danych */}
           <div className="border border-gray-700 bg-black/50 p-2">
             <h3 className="text-xs text-gray-500 mb-2 uppercase border-b border-gray-800 pb-1 flex justify-between">
                 <span>Zawartość ({vaultItems.length})</span>
-                <span className={masterPassword ? "text-green-500" : "text-gray-600"}>
-                    {masterPassword ? "ODBLOKOWANE" : "ZABLOKOWANE"}
+                <span className={isVaultUnlocked ? "text-green-500" : "text-gray-600"}>
+                    {isVaultUnlocked ? "ODBLOKOWANE" : "ZABLOKOWANE"}
                 </span>
             </h3>
             <div className="max-h-40 overflow-y-auto space-y-1 custom-scrollbar">
