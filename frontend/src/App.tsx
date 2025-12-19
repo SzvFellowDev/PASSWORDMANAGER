@@ -215,7 +215,7 @@ function App() {
       const decryptedString = new TextDecoder().decode(decryptedContent);
       const data = JSON.parse(decryptedString);
 
-      setDecryptedView(`TYTUŁ: ${data.title}\nDANE: ${data.secret}`);
+      setDecryptedView(`Serwis: ${data.title}\nHasło: ${data.secret}`);
       addLog("Przyznanie dostępu!");
     } catch (e) {
       addLog("Odmowa dostępu!");
@@ -269,7 +269,7 @@ function App() {
                 />
                </div>
                <div>
-                <label className="text-xs uppercase text-gray-500 tracking-widest">Dane</label>
+                <label className="text-xs uppercase text-gray-500 tracking-widest">Hasło</label>
                 <input 
                     type="text" 
                     value={inputSecret}
