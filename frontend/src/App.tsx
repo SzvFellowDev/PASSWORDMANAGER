@@ -7,7 +7,7 @@ interface VaultItem {
 }
 
 function App() {
-  // Pamięć aplikacji
+  //Pamięć aplikacji
   const [masterPassword, setMasterPassword] = useState('');
   const [inputTitle, setInputTitle] = useState('');
   const [inputSecret, setInputSecret] = useState('');
@@ -53,11 +53,11 @@ function App() {
     }
   };
 
-  // Zamiana hasła na klucz z użyciem PBKDF2
+  //Zamiana hasła na klucz z użyciem PBKDF2
   const getKey = async () => {
     const enc = new TextEncoder();
     
-    // Import hasła
+    //Import hasła
     const keyMaterial = await window.crypto.subtle.importKey(
       "raw", 
       enc.encode(masterPassword), 
@@ -66,10 +66,10 @@ function App() {
       ["deriveKey"]
     );
     
-    // Użycie soli kryptograficznej
+    //Użycie soli kryptograficznej
     const salt = enc.encode("sol-bunkra-demo"); 
 
-    // Wygenerowanie właściwego klucza AES
+    //Wygenerowanie właściwego klucza AES
     return window.crypto.subtle.deriveKey(
       { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
       keyMaterial,
@@ -79,7 +79,7 @@ function App() {
     );
   };
 
-  // Szyfrowanie (AES-GCM)
+  //Szyfrowanie (AES-GCM)
   const handleEncryptAndSave = async () => {
     if (!masterPassword || !inputTitle || !inputSecret) {
       addLog("ERROR: Wypełnij wszystkie pola!");
@@ -97,7 +97,7 @@ function App() {
       
       const encodedData = new TextEncoder().encode(dataPackage);
 
-      // Właściwe szyfrowanie
+      //Właściwe szyfrowanie
       const encryptedContent = await window.crypto.subtle.encrypt(
         { name: "AES-GCM", iv: iv },
         key,
@@ -180,29 +180,29 @@ function App() {
                 value={masterPassword}
                 onChange={(e) => setMasterPassword(e.target.value)}
                 className="w-full bg-gray-900 border border-gray-600 p-3 text-neon-blue focus:border-neon-blue focus:outline-none transition-colors"
-                placeholder="Wpisz klucz szyfrujący..."
+                placeholder="********"
               />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
                <div>
-                <label className="text-xs uppercase text-gray-500 tracking-widest">...</label>
+                <label className="text-xs uppercase text-gray-500 tracking-widest">Serwis</label>
                 <input 
                     type="text" 
                     value={inputTitle}
                     onChange={(e) => setInputTitle(e.target.value)}
                     className="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:border-neon-blue focus:outline-none"
-                    placeholder="np. Facebook"
+                    placeholder=""
                 />
                </div>
                <div>
-                <label className="text-xs uppercase text-gray-500 tracking-widest">...</label>
+                <label className="text-xs uppercase text-gray-500 tracking-widest">Dane</label>
                 <input 
                     type="text" 
                     value={inputSecret}
                     onChange={(e) => setInputSecret(e.target.value)}
                     className="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:border-neon-blue focus:outline-none"
-                    placeholder="Dane do ukrycia..."
+                    placeholder=""
                 />
                </div>
             </div>
