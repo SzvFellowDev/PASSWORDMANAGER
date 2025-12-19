@@ -210,7 +210,7 @@ function App() {
           {/* Wynik odszyfrowania */}
           {decryptedView && (
              <div className={`p-4 border ${decryptedView.includes('!') ? 'border-red-500 bg-red-900/20' : 'border-green-500/30 bg-green-900/20'}`}>
-                <label className="text-[10px] uppercase opacity-70">Wynik operacji:</label>
+                <label className="text-[10px] uppercase opacity-70">Twoje dane:</label>
                 <p className={decryptedView.includes('!') ? 'text-red-500 font-bold' : 'text-green-400 font-bold'}>{decryptedView}</p>
              </div>
           )}
