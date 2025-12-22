@@ -231,6 +231,7 @@ function App() {
         <div className="flex justify-between items-center bg-gray-800 p-2 border-b-2 border-gray-700 shrink-0">
           {/* nazwa apki */}
           <span className="text-xs text-gray-400">AHNS Password Manager</span>
+          <span className="text-xs text-gray-400">Autorzy: Krystian Szaliński | Cezary Woźniak</span>
           
           <div className="flex gap-2">
             <div className={`w-3 h-3 rounded-full transition-all ${isVaultUnlocked ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`}></div>
