@@ -71,6 +71,6 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"items": database})
 	})
 
-	println("SYSTEM: Backend startuje na porcie 8080...")
+	println("SYSTEM: Odpalam backend")
 	r.Run(":8080")
 }
