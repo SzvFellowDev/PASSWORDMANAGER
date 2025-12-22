@@ -17,7 +17,7 @@ KROK 1: BACKEND (Serwer API)
 1. Otwórz terminal w VSC (W katalogu BACKEND)
 2. Pobierz zależności: 
    go mod tidy
-3. Uruchom serwer: 
+3. Uruchom serwer:
    go run main.go
    (Serwer wystartuje na porcie 8080)
 
