@@ -77,7 +77,7 @@ function App() {
     );
     
     //Użycie soli kryptograficznej
-    const salt = enc.encode("sol-bunkra-demo"); 
+    const salt = enc.encode("sol-apki"); 
 
     //Wygenerowanie właściwego klucza AES
     return window.crypto.subtle.deriveKey(
