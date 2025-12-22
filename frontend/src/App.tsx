@@ -230,7 +230,7 @@ function App() {
         {/* Główny panel */}
         <div className="flex justify-between items-center bg-gray-800 p-2 border-b-2 border-gray-700 shrink-0">
           {/* nazwa apki */}
-          <span className="text-xs text-gray-400">AHNS Password Manager</span>
+          <span className="text-xs text-gray-400">AHNS Password Manager\n</span>
           <span className="text-xs text-gray-400">Autorzy: Krystian Szaliński | Cezary Woźniak</span>
           
           <div className="flex gap-2">
