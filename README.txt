@@ -9,11 +9,12 @@ Serwer Go przechowuje tylko zaszyfrowane bloby i zapisuje je w pliku vault.json.
 WYMAGANIA:
 1. Golang
 2. Node.js
+3. Visual Studio Code
 
 INSTRUKCJA URUCHOMIENIA:
 
 KROK 1: BACKEND (Serwer API)
-1. Otwórz terminal (W katalogu BACKEND)
+1. Otwórz terminal w VSC (W katalogu BACKEND)
 2. Pobierz zależności: 
    go mod tidy
 3. Uruchom serwer: 
@@ -21,7 +22,7 @@ KROK 1: BACKEND (Serwer API)
    (Serwer wystartuje na porcie 8080)
 
 KROK 2: FRONTEND (Interfejs React)
-1. Otwórz drugi terminal (w katalogu FRONTEND, nie zamykaj terminalu z BACKEND!)
+1. Otwórz drugi terminal w VSC (w katalogu FRONTEND, nie zamykaj terminalu z BACKEND!)
 2. Pobierz biblioteki: 
    npm install (W katalogu Frontend)
 3. Uruchom aplikację:
