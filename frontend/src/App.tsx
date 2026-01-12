@@ -469,7 +469,17 @@ function App() {
             <div className="max-h-60 overflow-y-auto space-y-1 custom-scrollbar">
                 {vaultItems.length === 0 && <p className="text-[10px] text-gray-700 text-center">Pusto...</p>}
                 
-                {vaultItems.map((item) => (
+              <div className="max-h-60 overflow-y-auto space-y-1 custom-scrollbar">
+                {vaultItems.length === 0 && <p className="text-[10px] text-gray-700 text-center">Pusto...</p>}
+                
+                {/* FILTROWANIE*/}
+                {vaultItems
+                    .filter((item) => {
+                        if (!isVaultUnlocked) return true;
+                        const title = item.decryptedTitle || "";
+                        return title.toLowerCase().includes(searchTerm.toLowerCase());
+                    })
+                    .map((item) => (
                     <div key={item.id} className={`flex justify-between items-center bg-gray-900 p-2 hover:bg-gray-800 transition-colors border-l-2 ${editingId === item.id ? 'border-yellow-500 bg-yellow-900/20' : 'border-transparent'}`}>
                         <div className="flex flex-col overflow-hidden max-w-[50%]">
                              {item.decryptedTitle ? (
@@ -508,6 +518,7 @@ function App() {
                         </div>
                     </div>
                 ))}
+            </div>
             </div>
           </div>
 
