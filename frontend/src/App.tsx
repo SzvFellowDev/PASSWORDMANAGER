@@ -153,6 +153,28 @@ function App() {
       addLog("Anulowano edycję.");
   };
 
+  //Generowanie hasła
+  const generateStrongPassword = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    const length = 16;
+    let password = "";
+    const array = new Uint32Array(length);
+    window.crypto.getRandomValues(array);
+    
+    for (let i = 0; i < length; i++) {
+      password += chars[array[i] % chars.length];
+    }
+    
+    setInputSecret(password);
+    addLog("GENERATOR: Utworzono silne hasło!");
+  };
+
+  //kopiowanie do schowka
+  const copyToClipboard = (text: string) => {
+      navigator.clipboard.writeText(text);
+      addLog("SCHOWEK: Skopiowano do schowka!");
+  };
+
   //Szyfrowanie i zapis
   const handleEncryptAndSave = async () => {
     if (!masterPassword || !inputTitle || !inputSecret) {
@@ -277,13 +299,22 @@ function App() {
                </div>
                <div>
                 <label className="text-xs uppercase text-gray-500 tracking-widest">Hasło {editingId && "(Edycja)"}</label>
-                <input 
-                    type="text" 
-                    value={inputSecret}
-                    onChange={(e) => setInputSecret(e.target.value)}
-                    className={`w-full bg-gray-900 border p-3 text-white focus:outline-none ${editingId ? 'border-yellow-500' : 'border-gray-600 focus:border-neon-blue'}`}
-                    placeholder=""
-                />
+                <div className="flex gap-2">
+                    <input 
+                        type="text" 
+                        value={inputSecret}
+                        onChange={(e) => setInputSecret(e.target.value)}
+                        className={`w-full bg-gray-900 border p-3 text-white focus:outline-none ${editingId ? 'border-yellow-500' : 'border-gray-600 focus:border-neon-blue'}`}
+                        placeholder=""
+                    />
+                    <button 
+                        onClick={generateStrongPassword}
+                        className="bg-gray-700 hover:bg-neon-blue hover:text-white text-gray-300 px-3 text-xs uppercase font-bold transition-colors border border-gray-600"
+                        title="Generuj losowe hasło"
+                    >
+                        🎲
+                    </button>
+                </div>
                </div>
             </div>
           </div>
@@ -311,11 +342,27 @@ function App() {
             )}
           </div>
           
-          {/* Wynik odszyfrowania (Podgląd) */}
+          {/* Wynik odszyfrowania */}
           {decryptedView && !editingId && (
-             <div className={`p-4 border ${decryptedView.includes('!') ? 'border-red-500 bg-red-900/20' : 'border-green-500/30 bg-green-900/20'}`}>
-                <label className="text-[10px] uppercase opacity-70">Twoje dane: </label>
-                <p className={`whitespace-pre-wrap ${decryptedView.includes('!') ? 'text-red-500 font-bold' : 'text-green-400 font-bold'}`}>{decryptedView}</p>
+             <div className={`p-4 border relative ${decryptedView.includes('!') ? 'border-red-500 bg-red-900/20' : 'border-green-500/30 bg-green-900/20'}`}>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <label className="text-[10px] uppercase opacity-70">Twoje dane: </label>
+                        <p className={`whitespace-pre-wrap ${decryptedView.includes('!') ? 'text-red-500 font-bold' : 'text-green-400 font-bold'}`}>{decryptedView}</p>
+                    </div>
+                    
+                    {!decryptedView.includes('!') && (
+                        <button 
+                            onClick={() => {
+                                const secretPart = decryptedView.split('Hasło: ')[1];
+                                if(secretPart) copyToClipboard(secretPart);
+                            }}
+                            className="text-xs bg-green-900/50 text-green-400 border border-green-500/50 px-2 py-1 hover:bg-green-500 hover:text-black transition-all"
+                        >
+                            KOPIUJ HASŁO
+                        </button>
+                    )}
+                </div>
              </div>
           )}
 
