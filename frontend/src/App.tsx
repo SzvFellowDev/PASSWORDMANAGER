@@ -11,6 +11,7 @@ interface VaultItem {
 }
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState('');
   const [masterPassword, setMasterPassword] = useState('');
   const [inputTitle, setInputTitle] = useState('');
   const [inputSecret, setInputSecret] = useState('');
@@ -20,6 +21,20 @@ function App() {
   const [logs, setLogs] = useState<string[]>(['> Inicjalizacja...', '> Gotowy do pracy...']);
 
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  //backup bazy
+  const handleExport = () => {
+      const dataStr = JSON.stringify(vaultItems, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `backup_sejf_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      addLog("SYSTEM: Pobrano kopię zapasową bazy.");
+  };
   
   //wylogowywanie
   const lockVault = () => {
@@ -44,7 +59,7 @@ function App() {
     const resetTimer = () => {
       //czyszczenie poprzedniego licznika
       clearTimeout(timeoutId);
-      //20 sekund
+      //10 sekund
       timeoutId = setTimeout(lockVault, logoutTime);
     };
 
@@ -426,6 +441,25 @@ function App() {
 
           {/* LISTA WPISÓW */}
           <div className="border border-gray-700 bg-black/50 p-2">
+            
+            {/* Pasek narzędzi listy */}
+            <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-800 gap-2">
+                <input 
+                    type="text" 
+                    placeholder="Szukaj serwisu..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    disabled={!isVaultUnlocked}
+                    className="bg-gray-900 border border-gray-600 text-xs p-2 text-white w-full focus:border-neon-blue outline-none disabled:opacity-50"
+                />
+                <button 
+                    onClick={handleExport}
+                    className="bg-gray-800 text-gray-400 hover:text-white px-3 py-2 border border-gray-600 text-[10px] uppercase font-bold whitespace-nowrap"
+                    title="Pobierz backup JSON"
+                >
+                    💾 BACKUP
+                </button>
+            </div>
             <h3 className="text-xs text-gray-500 mb-2 uppercase border-b border-gray-800 pb-1 flex justify-between">
                 <span>Zawartość ({vaultItems.length})</span>
                 <span className={isVaultUnlocked ? "text-green-500" : "text-gray-600"}>
