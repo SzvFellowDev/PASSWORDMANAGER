@@ -306,10 +306,24 @@ function App() {
             <span className="text-xs font-bold text-gray-300">AHNS Password Manager</span>
             <span className="text-xs font-bold text-gray-300">Autorzy: Krystian Szaliński | Cezary Woźniak</span>
           </div>
-          <div className="flex gap-2">
-            <div className={`w-3 h-3 rounded-full transition-all ${isVaultUnlocked ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`}></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-50"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+          <div className="flex items-center gap-4">
+
+             {/* Blokada */}
+             {masterPassword && (
+                 <button 
+                    onClick={lockVault}
+                    className="text-[10px] bg-red-900 text-red-300 px-2 py-1 border border-red-700 hover:bg-red-600 hover:text-white transition-colors uppercase font-bold"
+                 >
+                    🔒
+                 </button>
+             )}
+
+             {/* Status */}
+             <div className="flex gap-2">
+                <div className={`w-3 h-3 rounded-full transition-all ${isVaultUnlocked ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`} title="Status Szyfrowania"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-50"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+             </div>
           </div>
         </div>
 
