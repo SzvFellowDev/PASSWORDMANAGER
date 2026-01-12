@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-//wylogowanie po 20 sekundach
-const logoutTime = 20 * 1000; 
+//wylogowanie po 10 sekundach
+const logoutTime = 10 * 1000;
 
 interface VaultItem {
   id: string;
@@ -46,7 +45,7 @@ function App() {
       //czyszczenie poprzedniego licznika
       clearTimeout(timeoutId);
       //20 sekund
-      timeoutId = setTimeout(lockVault, AUTO_LOGOUT_TIME);
+      timeoutId = setTimeout(lockVault, logoutTime);
     };
 
     window.addEventListener('mousemove', resetTimer);
