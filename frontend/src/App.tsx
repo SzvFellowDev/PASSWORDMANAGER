@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+//wylogowanie po 20 sekundach
+const logoutTime = 20 * 1000; 
 
 interface VaultItem {
   id: string;
@@ -17,6 +21,47 @@ function App() {
   const [logs, setLogs] = useState<string[]>(['> Inicjalizacja...', '> Gotowy do pracy...']);
 
   const [editingId, setEditingId] = useState<string | null>(null);
+  
+  //wylogowywanie
+  const lockVault = () => {
+      if (!masterPassword) return;
+      
+      setMasterPassword('');
+      setDecryptedView('');
+      setEditingId(null);
+      setInputTitle('');
+      setInputSecret('');
+      
+      setVaultItems(prev => prev.map(item => ({ ...item, decryptedTitle: undefined })));
+      
+      addLog("🔒 AUTO-BLOKADA: Sesja wygasła.");
+  };
+
+  useEffect(() => {
+    if (!masterPassword) return;
+
+    let timeoutId: number;
+
+    const resetTimer = () => {
+      //czyszczenie poprzedniego licznika
+      clearTimeout(timeoutId);
+      //20 sekund
+      timeoutId = setTimeout(lockVault, AUTO_LOGOUT_TIME);
+    };
+
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    window.addEventListener('click', resetTimer);
+
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('keydown', resetTimer);
+      window.removeEventListener('click', resetTimer);
+    };
+  }, [masterPassword]);
 
   //Dodawanie wpisów w konsoli
   const addLog = (msg: string) => setLogs(prev => [...prev, `> ${msg}`].slice(-5));
