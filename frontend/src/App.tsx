@@ -128,7 +128,7 @@ function App() {
     const keyMaterial = await window.crypto.subtle.importKey(
       "raw", enc.encode(passwordToUse), { name: "PBKDF2" }, false, ["deriveKey"]
     );
-    const salt = enc.encode("sol-apki"); 
+    const salt = enc.encode("ahnssaltxyz"); 
     return window.crypto.subtle.deriveKey(
       { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
       keyMaterial, { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]
