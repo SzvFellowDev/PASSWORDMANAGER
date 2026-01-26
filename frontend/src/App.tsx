@@ -36,7 +36,7 @@ function App() {
       addLog("SYSTEM: Pobrano kopię zapasową bazy.");
   };
   
-  //wylogowywanie
+  //wylogowanie
   const lockVault = () => {
       if (!masterPassword) return;
       
