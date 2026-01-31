@@ -48,7 +48,7 @@ function App() {
       
       setVaultItems(prev => prev.map(item => ({ ...item, decryptedTitle: undefined })));
       
-      addLog("🔒 AUTO-BLOKADA: Sesja wygasła.");
+      addLog("AUTO-BLOKADA: Sesja wygasła.");
   };
 
   useEffect(() => {
