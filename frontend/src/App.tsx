@@ -314,7 +314,7 @@ function App() {
     <div className="min-h-screen bg-bunker-dark text-bunker-text font-mono flex items-center justify-center p-4">
       <div className="w-full max-w-2xl border-2 border-gray-700 bg-bunker-panel shadow-2xl relative flex flex-col max-h-[90vh]">
         
-        {/* NAGŁÓWEK */}
+        {/*NAGŁÓWEK*/}
         <div className="flex justify-between items-center bg-gray-800 p-2 border-b-2 border-gray-700 shrink-0">
           <div className="flex flex-col">
             <span className="text-xs font-bold text-gray-300">AHNS Password Manager</span>
@@ -322,7 +322,7 @@ function App() {
           </div>
           <div className="flex items-center gap-4">
 
-             {/* Blokada */}
+             {/*BLOKADA*/}
              {masterPassword && (
                  <button 
                     onClick={lockVault}
@@ -332,7 +332,7 @@ function App() {
                  </button>
              )}
 
-             {/* Status */}
+             {/*STATUS*/}
              <div className="flex gap-2">
                 <div className={`w-3 h-3 rounded-full transition-all ${isVaultUnlocked ? 'bg-green-500 shadow-[0_0_8px_rgba(0,255,0,0.8)]' : 'bg-red-500'}`} title="Status Szyfrowania"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-50"></div>
@@ -346,7 +346,7 @@ function App() {
             {editingId ? "EDYCJA WPISU" : "Menedżer Haseł"}
           </h1>
 
-          {/* FORMULARZ */}
+          {/*FORMULARZ*/}
           <div className={`space-y-4 p-4 border ${editingId ? 'border-yellow-500 bg-yellow-900/10' : 'border-transparent'}`}>
             <div>
               <label className="text-xs uppercase text-gray-500 tracking-widest">Klucz dostępu: </label>
@@ -385,14 +385,14 @@ function App() {
                         className="bg-gray-700 hover:bg-neon-blue hover:text-white text-gray-300 px-3 text-xs uppercase font-bold transition-colors border border-gray-600"
                         title="Generuj losowe hasło"
                     >
-                        🎲
+                        GENERUJ HASŁO
                     </button>
                 </div>
                </div>
             </div>
           </div>
 
-          {/* PRZYCISKI AKCJI */}
+          {/*PRZYCISKI AKCJI*/}
           <div className="grid grid-cols-2 gap-4">
             {editingId ? (
                 <>
@@ -415,7 +415,7 @@ function App() {
             )}
           </div>
           
-          {/* Wynik odszyfrowania */}
+          {/*Wynik odszyfrowania*/}
           {decryptedView && !editingId && (
              <div className={`p-4 border relative ${decryptedView.includes('!') ? 'border-red-500 bg-red-900/20' : 'border-green-500/30 bg-green-900/20'}`}>
                 <div className="flex justify-between items-start">
@@ -439,7 +439,7 @@ function App() {
              </div>
           )}
 
-          {/* LISTA WPISÓW */}
+          {/*LISTA WPISÓW*/}
           <div className="border border-gray-700 bg-black/50 p-2">
             
             {/* Pasek narzędzi listy */}
@@ -457,7 +457,7 @@ function App() {
                     className="bg-gray-800 text-gray-400 hover:text-white px-3 py-2 border border-gray-600 text-[10px] uppercase font-bold whitespace-nowrap"
                     title="Pobierz backup JSON"
                 >
-                    💾 BACKUP
+                    BACKUP
                 </button>
             </div>
             <h3 className="text-xs text-gray-500 mb-2 uppercase border-b border-gray-800 pb-1 flex justify-between">
@@ -472,7 +472,7 @@ function App() {
               <div className="max-h-60 overflow-y-auto space-y-1 custom-scrollbar">
                 {vaultItems.length === 0 && <p className="text-[10px] text-gray-700 text-center">Pusto...</p>}
                 
-                {/* FILTROWANIE*/}
+                {/*FILTROWANIE*/}
                 {vaultItems
                     .filter((item) => {
                         if (!isVaultUnlocked) return true;
@@ -490,7 +490,7 @@ function App() {
                         </div>
                         
                         <div className="flex gap-2">
-                            {/* PRZYCISK POKAŻ */}
+                            {/*PRZYCISK POKAŻ*/}
                             <button 
                                 onClick={() => handleDecryptItem(item.content)}
                                 className="text-[10px] px-2 py-1 border border-gray-600 text-gray-400 hover:text-white hover:border-white transition-all uppercase"
@@ -498,7 +498,7 @@ function App() {
                                 Pokaż
                             </button>
 
-                            {/* PRZYCISK EDYTUJ */}
+                            {/*PRZYCISK EDYTUJ*/}
                             {item.decryptedTitle && (
                                 <button 
                                     onClick={() => startEditing(item)}
@@ -508,7 +508,7 @@ function App() {
                                 </button>
                             )}
 
-                            {/* PRZYCISK USUŃ */}
+                            {/*PRZYCISK USUŃ*/}
                             <button 
                                 onClick={() => handleDelete(item.id)}
                                 className="text-[10px] px-2 py-1 border border-red-900 text-red-500 hover:bg-red-600 hover:text-white transition-all uppercase"
@@ -522,7 +522,7 @@ function App() {
             </div>
           </div>
 
-          {/* LOGI */}
+          {/*LOGI*/}
           <div className="mt-4 p-4 bg-black border border-gray-800 font-mono text-xs text-gray-500 h-24 overflow-hidden flex flex-col justify-end shrink-0">
             {logs.map((log, i) => (
               <p key={i} className={
